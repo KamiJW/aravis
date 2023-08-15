@@ -714,11 +714,19 @@ _missing_packet_check (ArvGvStreamThreadData *thread_data,
 							       time_us - frame->first_packet_time_us,
 							       packet_id, frame->n_packets);
 
-					_send_packet_request (thread_data,
+                                        if (last_missing + 1 == frame->n_packets) {
+                                                _send_packet_request (thread_data,
 							      frame->frame_id,
 							      first_missing,
-							      last_missing,
+							      0xFFFFFF,
 							      frame->extended_ids);
+                                        } else {
+        					_send_packet_request (thread_data,
+                                                              frame->frame_id,
+                                                              first_missing,
+                                                              last_missing,
+                                                              frame->extended_ids);
+                                        }
 
 					for (j = first_missing; j <= last_missing; j++) {
 						frame->packet_data[j].abs_timeout_us = time_us +
